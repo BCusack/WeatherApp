@@ -14,7 +14,7 @@ navbar = dbc.NavbarSimple(
             label="More",
         ),
     ],
-    brand="NavbarSimple",
+    brand="Weather App",
     brand_href="#",
     color="primary",
     dark=True,

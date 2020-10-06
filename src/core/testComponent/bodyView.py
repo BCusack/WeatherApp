@@ -1,7 +1,14 @@
-import dash
 import dash_html_components as html
+import dash_core_components as dcc
 import dash_bootstrap_components as dbc
+import pandas as pd
+import plotly.graph_objs as go
 
+df = pd.read_csv("assets/out.csv")
+fig = go.Figure()
+fig.add_trace(go.Scatter(y=df["Max_Temp"], x=df["Date"], name="Max"))
+fig.add_trace(go.Scatter(y=df["Min_Temp"], x=df["Date"], name="Min"))
+fig.update_layout(showlegend=True)
 
 body = html.Div(
     [
@@ -30,5 +37,16 @@ body = html.Div(
         dbc.Button("Light", color="light", className="mr-1"),
         dbc.Button("Dark", color="dark", className="mr-1"),
         dbc.Button("Link", color="link"),
+        html.Div(
+            children=[
+                dbc.Row(
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody(dcc.Graph(figure=fig)),
+                        )
+                    )
+                )
+            ]
+        ),
     ]
 )

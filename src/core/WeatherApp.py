@@ -5,9 +5,8 @@ import dash
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 
-from .shared.navbar.navView import *
-from .testComponent.bodyView import *
+from .shared.navbar.navView import navbar
+from .testComponent.bodyView import body
 
 
-def app_module():
-    return html.Div([navbar, dbc.Container(children=[body])])
+layout = html.Div([navbar, dbc.Container(children=[body])])
