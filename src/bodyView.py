@@ -2,14 +2,16 @@ import dash_html_components as html
 import dash_core_components as dcc
 import dash_bootstrap_components as dbc
 from src.slider import slider
-from src.filters import filters
+from src import filters
+from dash.dependencies import Input, Output
+from app import app
 
 body = html.Div(
     [
         html.Div(
             children=[
                 dbc.Row(
-                    dbc.Col(filters, width={"size": 10, "offset": 1}),
+                    dbc.Col(filters.filters, width={"size": 10, "offset": 1}),
                 ),
                 dbc.Row(
                     dbc.Col(

@@ -11,9 +11,10 @@ import plotly.graph_objs as go
 import pandas as pd
 import datetime
 import plotly.express as px
+from src import filters
 
 data = get_data()
-app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
+app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 
 app.layout = html.Div(
@@ -49,10 +50,22 @@ def build_graph(years):
     mask = (dataFrame["year"] > start_date) & (dataFrame["year"] <= end_date)
     dataFrame = dataFrame.loc[mask]
     fig = go.Figure()
-    fig.add_trace(go.Scatter(y=dataFrame["Max_Temp"], x=dataFrame["Date"], name="Max"))
-    fig.add_trace(go.Scatter(y=dataFrame["Min_Temp"], x=dataFrame["Date"], name="Min"))
+    fig.add_trace(
+        go.Scatter(y=dataFrame["Max_Temp"], x=dataFrame["Date"], name="Max Temp")
+    )
+    fig.add_trace(
+        go.Scatter(y=dataFrame["Min_Temp"], x=dataFrame["Date"], name="Min Temp")
+    )
     fig.update_layout(showlegend=True)
     return fig
+
+
+@app.callback(Output("button1", "outline"), [Input("button1", "n_clicks")])
+def on_button_click(n):
+    if n % 2 == 0:
+        return True
+    else:
+        return False
 
 
 if __name__ == "__main__":
