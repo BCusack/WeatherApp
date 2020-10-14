@@ -10,8 +10,7 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 import pandas as pd
 import datetime
-import plotly.express as px
-from src import filters
+
 
 data = get_data()
 app = dash.Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -26,7 +25,7 @@ app.layout = html.Div(
                     dbc.Col(
                         html.H3(data["Station Name"][0] + " Weather Data Analysis"),
                     ),
-                    className="title text-light text-center mt-3",
+                    className="title text-center mt-3",
                 ),
                 dbc.Row(
                     dbc.Col(
@@ -39,33 +38,67 @@ app.layout = html.Div(
 )
 
 
-@app.callback(Output("scatter_graph", "figure"), [Input("my-range-slider", "value")])
-def build_graph(years):
+@app.callback(
+    Output("corr_graph", "figure"),
+    [Input("xinput", "value"), Input("yinput", "value")],
+)
+def update_corr_graph(xvalue, yvalue):
+    dataFrame = data
+    c_fig = go.Figure()
+    c_fig.add_trace(
+        go.Scatter(
+            y=dataFrame[xvalue],
+            x=dataFrame[yvalue],
+            mode="markers",
+        )
+    )
+
+    c_fig.update_layout(
+        height=600,
+        autosize=False,
+        xaxis={"title": xvalue, "type": "linear"},
+        yaxis={"title": yvalue, "type": "linear"},
+        margin={"l": 40, "b": 40, "t": 10, "r": 0},
+        hovermode="closest",
+    )
+    return c_fig
+
+
+@app.callback(
+    Output("scatter_graph", "figure"),
+    [Input("my-range-slider", "value"), Input("dropdown_filter", "value")],
+)
+def build_graph(years, selected):
     dataFrame = data
     dataFrame["year"] = dataFrame["Date"].dt.year
     ini = {}
     ini = dataFrame["year"].unique()
-    start_date = ini[years[0] - 1]
+    start_date = ini[years[0]]
     end_date = ini[years[1]]
-    mask = (dataFrame["year"] > start_date) & (dataFrame["year"] <= end_date)
+    mask = (dataFrame["year"] >= start_date) & (dataFrame["year"] <= end_date)
     dataFrame = dataFrame.loc[mask]
     fig = go.Figure()
-    fig.add_trace(
-        go.Scatter(y=dataFrame["Max_Temp"], x=dataFrame["Date"], name="Max Temp")
-    )
-    fig.add_trace(
-        go.Scatter(y=dataFrame["Min_Temp"], x=dataFrame["Date"], name="Min Temp")
-    )
-    fig.update_layout(showlegend=True)
-    return fig
-
-
-@app.callback(Output("button1", "outline"), [Input("button1", "n_clicks")])
-def on_button_click(n):
-    if n % 2 == 0:
-        return True
+    array_length = len(selected)
+    if len(selected) > 0:
+        for i in range(array_length):
+            fig.add_trace(
+                go.Scatter(
+                    y=dataFrame[selected[i]],
+                    x=dataFrame["Date"],
+                    name=selected[i],
+                    mode="markers",
+                )
+            )
     else:
-        return False
+        fig.add_trace(
+            go.Scatter(y=dataFrame["Max_Temp"], x=dataFrame["Date"], name="Max Temp")
+        )
+    fig.update_layout(
+        showlegend=True,
+        height=600,
+        autosize=False,
+    )
+    return fig
 
 
 if __name__ == "__main__":
